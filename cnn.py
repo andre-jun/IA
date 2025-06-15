@@ -20,8 +20,11 @@ class ChoroCNN(nn.Module):
         x = F.relu(self.fc1(x))
         return self.fc2(x)
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Usando dispositivo: {device}")
+
 # Carregando os dados
-data = np.load("preProcesso.npz")
+data = np.load("preProcessoTreinamento.npz")
 X = data["X"]
 y = data["y"]
 
@@ -38,7 +41,7 @@ train_loader = DataLoader(dataset, batch_size=32, shuffle=True)
 
 # Abaixo disso 'e oq temq mudar pra acertar o modelo pq agr ta provavelmente dando overfitting(n testei)
 #[bookmark]
-modelo = ChoroCNN()
+modelo = ChoroCNN().to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(modelo.parameters(), lr=0.001)
 
@@ -47,6 +50,9 @@ for epoch in range(n_epochs):
     modelo.train()
     running_loss = 0.0
     for X_batch, y_batch in train_loader:
+        X_batch = X_batch.to(device)
+        y_batch = y_batch.to(device)
+
         optimizer.zero_grad()
         outputs = modelo(X_batch)
         loss = criterion(outputs, y_batch)

@@ -1,3 +1,6 @@
 librosa
 numpy
 torch
+pandas
+scikit-learn
+
